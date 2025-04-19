@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historische Tijdlijn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 60px; /* Ruimte voor vaste filterbalk */
+        }
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 10px;
+            z-index: 1000;
+            text-align: center;
+        }
+        .filter-button, .zoom-button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .filter-button.active {
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3); /* Ingedrukt effect */
+            filter: brightness(1.2); /* Lichtere kleur */
+        }
+        .religie-filter { background-color: #ff9999; }
+        .volkscultuur-filter { background-color: #99ccff; }
+        .lichaamscultuur-filter { background-color: #99ff99; }
+        .timeline-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            margin-top: 20px;
+        }
+        .eras {
+            position: absolute;
+            width: 100px;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+        .era {
+            position: absolute;
+            width: 90px;
+            padding: 5px;
+            font-size: 12px;
+            color: #333;
+            text-align: right;
+            left: auto;
+            right: 0;
+            font-weight: bold; /* Tijdperken in vet */
+        }
+        /* Achtergrondkleuren voor tijdperken */
+        .grieken-era { background-color: #ffcccc; }
+        .romeinen-era { background-color: #ccccff; }
+        .middeleeuwen-era { background-color: #ccffcc; }
+        .vroegmoderne-tijd-era { background-color: #ffffcc; }
+        .moderne-tijd-era { background-color: #ffccff; }
+        .hedendaagse-tijd-era { background-color: #ccffff; }
+        .timeline {
+            position: relative;
+            margin-left: 100px; /* Ruimte voor de tijdperken */
+            margin-right: 450px; /* Breder gemaakt om overlap te voorkomen */
+            flex: 1;
+        }
+        .timeline-line {
+            position: absolute;
+            width: 2px;
+            background-color: #333;
+            top: 0;
+            bottom: 0;
+            left: 50%; /* Gecentreerd in de tijdlijnzone */
+            transform: translateX(-50%);
+        }
+        .timeline-item {
+            position: absolute;
+            width: auto; /* Automatische breedte */
+            max-width: 600px; /* Maximale breedte voor lange teksten */
+            padding: 2px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            font-size: 9px;
+            z-index: 2;
+            left: 50%;
+            margin-left: 40px; /* Afstand van de tijdlijn */
+            text-align: left;
+            white-space: nowrap; /* Voorkom tekstterugloop */
+        }
+        .timeline-item h2 {
+            font-size: 10px;
+            margin: 0;
+            display: inline;
+        }
+        .timeline-item p {
+            margin: 0;
+            display: inline;
+        }
+        .timeline-item p::before {
+            content: " - ";
+        }
+        /* Horizontale lijn naar de tijdlijn */
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 1px;
+            background: #666;
+            border: none;
+            border-top: 1px dashed #666;
+            top: 50%;
+            left: -40px; /* Verbindt item met tijdlijn */
+        }
+        /* Kleurcodes voor motoren */
+        .religie { background-color: #ff9999; }
+        .volkscultuur { background-color: #99ccff; }
+        .lichaamscultuur { background-color: #99ff99; }
+        .century-marker, .millennium-marker {
+            position: absolute;
+            left: 50%; /* Gecentreerd in de tijdlijnzone */
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #666;
+            background-color: #fff;
+            padding: 2px 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            z-index: 1;
+        }
+        .millennium-marker {
+            font-weight: bold;
+            color: #333;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <button class="filter-button religie-filter active" onclick="toggleMotor('Religie')">Religie</button>
+        <button class="filter-button volkscultuur-filter active" onclick="toggleMotor('Volkscultuur')">Volkscultuur</button>
+        <button class="filter-button lichaamscultuur-filter active" onclick="toggleMotor('Lichaamscultuur')">Lichaamscultuur</button>
+        <button class="zoom-button" onclick="setZoom(2)">Overzicht</button>
+        <button class="zoom-button" onclick="setZoom(4)">Normaal</button>
+        <button class="zoom-button" onclick="setZoom(8)">Detail</button>
+    </div>
+    <h1>Historische Tijdlijn van Gebeurtenissen</h1>
+    <div class="timeline-container">
+        <div class="eras">
+            <!-- Tijdperken als statische labels -->
+            <div class="era grieken-era" data-year-start="-2000" data-year-end="-400">
+                Grieken
+            </div>
+            <div class="era romeinen-era" data-year-start="-300" data-year-end="500">
+                Romeinen
+            </div>
+            <div class="era middeleeuwen-era" data-year-start="500" data-year-end="1490">
+                Middeleeuwen
+            </div>
+            <div class="era vroegmoderne-tijd-era" data-year-start="1500" data-year-end="1800">
+                Vroeg moderne tijd
+            </div>
+            <div class="era moderne-tijd-era" data-year-start="1800" data-year-end="1900">
+                Moderne tijd
+            </div>
+            <div class="era hedendaagse-tijd-era" data-year-start="1900" data-year-end="2000">
+                Hedendaagse tijd
+            </div>
+        </div>
+        <div class="timeline">
+            <div class="timeline-line"></div>
+            <!-- Griekse Periode -->
+            <div class="timeline-item religie" data-motor="Religie" data-year="-2000">
+                <div class="content">
+                    <h2>2000 v.Chr.</h2>
+                    <p>Kreta en Mykene, eerste wortels van sport</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-1200">
+                <div class="content">
+                    <h2>1200 v.Chr.</h2>
+                    <p>Archaïsche periode (ouder Grieken)</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-1200">
+                <div class="content">
+                    <h2>1200 v.Chr.</h2>
+                    <p>Spelen van Patroklos Mythe</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-776">
+                <div class="content">
+                    <h2>776 v.Chr.</h2>
+                    <p>Eerste Griekse spelen in Olympia: mythe Zeus</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="-720">
+                <div class="content">
+                    <h2>720 v.Chr.</h2>
+                    <p>Pausanias verhaal Orsippos: naaktheid verklaren</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-700">
+                <div class="content">
+                    <h2>700 v.Chr.</h2>
+                    <p>Mythe van Pelops en Oinomaos</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-570">
+                <div class="content">
+                    <h2>570 v.Chr.</h2>
+                    <p>Olympische Spelen in Elis (ervoor in Pisa)</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-500">
+                <div class="content">
+                    <h2>500 v.Chr.</h2>
+                    <p>Start van de Panhelleense spelen</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-400">
+                <div class="content">
+                    <h2>400 v.Chr.</h2>
+                    <p>Verhaal Kallipateira naaktheid</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-massotor="Religie" data-year="500">
+                <div class="content">
+                    <h2>500 n.Chr.</h2>
+                    <p>Einde van de Olympische spelen</p>
+                </div>
+            </div>
+
+            <!-- Romeinse Periode -->
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-300">
+                <div class="content">
+                    <h2>300 v.Chr.</h2>
+                    <p>Melding van de eerste gladiatorengevechten</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-275">
+                <div class="content">
+                    <h2>275 v.Chr.</h2>
+                    <p>Romeinen maken kennis met exotische dieren</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-200">
+                <div class="content">
+                    <h2>200 v.Chr.</h2>
+                    <p>Stijging populariteit van de Romeinse spelen met gladiatoren</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-146">
+                <div class="content">
+                    <h2>146 v.Chr.</h2>
+                    <p>Verovering Griekenland door Romeinen</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-63">
+                <div class="content">
+                    <h2>63 v.Chr.</h2>
+                    <p>Keizer Augustus</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="67">
+                <div class="content">
+                    <h2>67 n.Chr.</h2>
+                    <p>Keizer Nero verplaatst de Olympische spelen een jaar</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="86">
+                <div class="content">
+                    <h2>86 n.Chr.</h2>
+                    <p>Keizer Domitianus richt Captiolische spelen op</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="350">
+                <div class="content">
+                    <h2>350 n.Chr.</h2>
+                    <p>Daling populariteit gladiatorengevechten door Christendom</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="500">
+                <div class="content">
+                    <h2>500 n.Chr.</h2>
+                    <p>Einde van de Romeinse spelen</p>
+                </div>
+            </div>
+
+            <!-- Middeleeuwen -->
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="500">
+                <div class="content">
+                    <h2>500 n.Chr.</h2>
+                    <p>Eerste volksspelen op pleinen en markten</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1100">
+                <div class="content">
+                    <h2>1100 n.Chr.</h2>
+                    <p>Opkomst riddertornooien</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1167">
+                <div class="content">
+                    <h2>1167 n.Chr.</h2>
+                    <p>Willem De Maarschalk wint riddertornooi</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1200">
+                <div class="content">
+                    <h2>1200 n.Chr.</h2>
+                    <p>12de en 13de eeuw: Christenen tegen riddertornooien</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1250">
+                <div class="content">
+                    <h2>1250 n.Chr.</h2>
+                    <p>Evolutie tornooi: lanssteekspel en gevecht met zwaard</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1442">
+                <div class="content">
+                    <h2>1442 n.Chr.</h2>
+                    <p>Verfijnen puntensysteem riddertornooien</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1490">
+                <div class="content">
+                    <h2>1490 n.Chr.</h2>
+                    <p>Einde 15de -16de eeuw: riddertornooien verdwijnen</p>
+                </div>
+            </div>
+
+            <!-- Vroeg moderne tijd -->
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1500">
+                <div class="content">
+                    <h2>1500 n.Chr.</h2>
+                    <p>Tudortijd met Middeleeuws knokvoetbal</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1500">
+                <div class="content">
+                    <h2>1500 n.Chr.</h2>
+                    <p>Volks- en kroegspelen worden belangrijker: herbergen, drukpers, handel</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1560">
+                <div class="content">
+                    <h2>1560 n.Chr.</h2>
+                    <p>Schilderij Pieter Breughel 'kinderspelen'</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Katholieke kerk begint sport en beweging te stimuleren</p>
+                </div>
+            </div>
+
+            <!-- Moderne tijd -->
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Opkomst van volksspelen en georganiseerde competities</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Maakbaarheid van de mens met opkomst 'gymnastiek'</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Begin 19de E: Duitse gym met Jahn.</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1810">
+                <div class="content">
+                    <h2>1810 n.Chr.</h2>
+                    <p>Ontstaan Zweedse gymnastiek met Ling in Zweden</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1850">
+                <div class="content">
+                    <h2>1850 n.Chr.</h2>
+                    <p>Nut lichamelijke opvoeding voor jongens door Katholieke geestelijken</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1850">
+                <div class="content">
+                    <h2>1850 n.Chr.</h2>
+                    <p>Aandacht voor 'homo ludens'</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1896">
+                <div class="content">
+                    <h2>1896 n.Chr.</h2>
+                    <p>Eerste moderne Olympische Spelen in Athene</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1900">
+                <div class="content">
+                    <h2>1900 n.Chr.</h2>
+                    <p>Ontstaan gymzalen en 'Ecoles de culture physique'</p>
+                </div>
+            </div>
+
+            <!-- Hedendaagse tijd -->
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1946">
+                <div class="content">
+                    <h2>1946 n.Chr.</h2>
+                    <p>Le mouvement culturiste Belge van Prosper Creyae en GeorgesDardenne</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1966">
+                <div class="content">
+                    <h2>1966 n.Chr.</h2>
+                    <p>Europees handvest sport voor Allen</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1981">
+                <div class="content">
+                    <h2>1981 n.Chr.</h2>
+                    <p>Herwaardering van Vlaamse volkssporten</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="2000">
+                <div class="content">
+                    <h2>2000 n.Chr.</h2>
+                    <p>Terugval volkssporten, promotie door Volkssportcentrale</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let zoomLevel = 4; // Standaard zoomniveau (Normaal)
+        let scale = 0.1; // Basis pixels per jaar
+        let activeMotors = ['Religie', 'Volkscultuur', 'Lichaamscultuur'];
+
+        function parseYear(yearStr) {
+            if (yearStr.includes("v.Chr.")) {
+                return -parseInt(yearStr.replace(" v.Chr.", ""));
+            } else if (yearStr.includes("n.Chr.")) {
+                return parseInt(yearStr.replace(" n.Chr.", ""));
+            } else {
+                return parseInt(yearStr);
+            }
+        }
+
+        function setZoom(newZoom) {
+            zoomLevel = newZoom;
+            updateTimeline();
+        }
+
+        function toggleMotor(motor) {
+            const button = document.querySelector(`.filter-button[onclick="toggleMotor('${motor}')"]`);
+            if (activeMotors.includes(motor)) {
+                activeMotors = activeMotors.filter(m => m !== motor);
+                button.classList.remove('active');
+            } else {
+                activeMotors.push(motor);
+                button.classList.add('active');
+            }
+            updateTimeline();
+        }
+
+        function updateTimeline() {
+            const timeline = document.querySelector('.timeline');
+            const items = document.querySelectorAll('.timeline-item');
+            const eras = document.querySelectorAll('.era');
+            let minYear = Infinity;
+            let maxYear = -Infinity;
+
+            // Bepaal min en max jaar
+            items.forEach(item => {
+                const year = parseYear(item.dataset.year);
+                if (year < minYear) minYear = year;
+                if (year > maxYear) maxYear = year;
+            });
+
+            const totalYears = maxYear - minYear;
+            const timelineHeight = totalYears * scale * zoomLevel;
+            timeline.style.height = timelineHeight + 'px';
+            document.querySelector('.eras').style.height = timelineHeight + 'px';
+
+            // Positioneer items
+            items.forEach(item => {
+                if (activeMotors.includes(item.dataset.motor)) {
+                    item.style.display = 'block';
+                    const year = parseYear(item.dataset.year);
+                    const position = (year - minYear) * scale * zoomLevel;
+                    item.style.top = position + 'px';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Positioneer tijdperken
+            eras.forEach(era => {
+                const startYear = parseYear(era.dataset.yearStart);
+                const endYear = parseYear(era.dataset.yearEnd);
+                const startPosition = (startYear - minYear) * scale * zoomLevel;
+                const endPosition = (endYear - minYear) * scale * zoomLevel;
+                era.style.top = startPosition + 'px';
+                era.style.height = (endPosition - startPosition) + 'px';
+            });
+
+            // Voeg markeringen toe
+            addMarkers(minYear, maxYear, timelineHeight);
+        }
+
+        function addMarkers(minYear, maxYear, timelineHeight) {
+            const timeline = document.querySelector('.timeline');
+            const markers = document.querySelectorAll('.century-marker, .millennium-marker');
+            markers.forEach(marker => marker.remove()); // Verwijder bestaande markeringen
+
+            const startCentury = Math.ceil(minYear / 100) * 100;
+            const endCentury = Math.floor(maxYear / 100) * 100;
+
+            for (let year = startCentury; year <= endCentury; year += 100) {
+                const position = (year - minYear) * scale * zoomLevel;
+                const marker = document.createElement('div');
+                marker.className = 'century-marker';
+                marker.style.top = position + 'px';
+                marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
+                timeline.appendChild(marker);
+            }
+
+            const startMillennium = Math.ceil(minYear / 1000) * 1000;
+            const endMillennium = Math.floor(maxYear / 1000) * 1000;
+
+            for (let year = startMillennium; year <= endMillennium; year += 1000) {
+                const position = (year - minYear) * scale * zoomLevel;
+                const marker = document.createElement('div');
+                marker.className = 'millennium-marker';
+                marker.style.top = position + 'px';
+                marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
+                timeline.appendChild(marker);
+            }
+        }
+
+        // Start de tijdlijn
+        updateTimeline();
+    </script>
+</body>
+</html>
