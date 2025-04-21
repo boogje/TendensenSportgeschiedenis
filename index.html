@@ -134,8 +134,8 @@
         .lichaamscultuur { background-color: #99ff99; }
         .century-marker, .millennium-marker {
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0; /* Plaats links van de tijdlijn */
+            transform: none; /* Verwijder centrering */
             font-size: 12px;
             color: #666;
             background-color: rgba(255, 255, 255, 0.8);
@@ -149,6 +149,19 @@
             font-weight: bold;
             color: #333;
             font-size: 16.8px;
+        }
+        .century-tick, .millennium-tick {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px; /* Lengte van het streepje */
+            height: 2px;
+            background-color: #666;
+            z-index: 1;
+        }
+        .millennium-tick {
+            background-color: #333;
+            width: 15px; /* Iets langer streepje voor millennium */
         }
         .connector-line {
             position: absolute;
@@ -326,8 +339,13 @@
             // Globale posities voor overlap-controle
             let positions = [];
 
+            // Eerst alle items verbergen, dan opnieuw positioneren
             items.forEach(item => {
-                // Alleen items verwerken die overeenkomen met actieve motoren
+                item.style.display = 'none';
+            });
+
+            // Verwerk alle zichtbare items
+            items.forEach(item => {
                 if (activeMotors.includes(item.dataset.motor)) {
                     item.style.display = 'block';
                     const year = parseYear(item.dataset.year);
@@ -345,7 +363,7 @@
                         const currentBottom = position + itemHeight;
 
                         // Controleer of het huidige item overlapt met een eerder item
-                        if (Math.abs(currentTop - posTop) < 5 || (currentTop >= posTop && currentTop < posBottom)) {
+                        if (currentBottom > posTop && currentTop < posBottom) {
                             // Verschuif naar de onderkant van het vorige item
                             verticalShift = Math.max(verticalShift, posBottom - position + 5);
                         }
@@ -364,7 +382,7 @@
                     const timelineY = (year - minYear) * scale * zoomLevel; // Het oorspronkelijke punt op de tijdlijn
 
                     // Hoogte van de SVG moet de afstand tussen timelineY en itemY overbruggen
-                    const svgHeight = Math.abs(itemY - timelineY) + 4; // +4 voor ruimte voor het bolletje
+                    const svgHeight = Math.abs(itemY - timelineY) + 6; // +6 voor ruimte voor het bolletje
                     const svgTop = Math.min(timelineY, itemY); // SVG begint op de laagste y-positie
 
                     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -404,11 +422,9 @@
                     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                     circle.setAttribute("cx", "0");
                     circle.setAttribute("cy", lineY1);
-                    circle.setAttribute("r", "2");
+                    circle.setAttribute("r", "3"); // Groter bolletje voor betere zichtbaarheid
                     circle.setAttribute("fill", lineColor);
                     svg.appendChild(circle);
-
-                    timeline.appendChild(svg);
                 } else {
                     item.style.display = 'none';
                 }
@@ -430,7 +446,7 @@
 
         function addMarkers(minYear, maxYear, timelineHeight) {
             const timeline = document.querySelector('.timeline');
-            const markers = document.querySelectorAll('.century-marker, .millennium-marker');
+            const markers = document.querySelectorAll('.century-marker, .millennium-marker, .century-tick, .millennium-tick');
             markers.forEach(marker => marker.remove());
 
             const startCentury = Math.ceil(minYear / 100) * 100;
@@ -443,6 +459,12 @@
                 marker.style.top = position + 'px';
                 marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
                 timeline.appendChild(marker);
+
+                // Voeg een kort streepje toe op de tijdlijn
+                const tick = document.createElement('div');
+                tick.className = 'century-tick';
+                tick.style.top = position + 'px';
+                timeline.appendChild(tick);
             }
 
             const startMillennium = Math.ceil(minYear / 1000) * 1000;
@@ -455,6 +477,12 @@
                 marker.style.top = position + 'px';
                 marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
                 timeline.appendChild(marker);
+
+                // Voeg een kort streepje toe op de tijdlijn
+                const tick = document.createElement('div');
+                tick.className = 'millennium-tick';
+                tick.style.top = position + 'px';
+                timeline.appendChild(tick);
             }
         }
 
