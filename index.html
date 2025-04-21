@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historische Tijdlijn</title>
+    <title>Verticale Historische Tijdlijn</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
         h1 {
             text-align: center;
             color: #333;
-            margin-top: 80px; /* Ruimte voor de twee rijen in de werkbalk */
+            margin-top: 80px; /* Ruimte voor de vaste werkbalk */
         }
         #toolbar {
             position: fixed;
@@ -48,8 +48,8 @@
             transition: all 0.2s ease;
         }
         .filter-button.active {
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3); /* Ingedrukt effect */
-            filter: brightness(1.2); /* Lichtere kleur */
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.2);
         }
         .religie-filter { background-color: #ff9999; }
         .volkscultuur-filter { background-color: #99ccff; }
@@ -71,14 +71,14 @@
         }
         .era {
             position: absolute;
-            width: 140px; /* Iets smaller dan de container voor padding */
+            width: 140px;
             padding: 5px;
             font-size: 12px;
             color: #333;
             text-align: right;
             left: auto;
             right: 0;
-            font-weight: bold; /* Tijdperken in vet */
+            font-weight: bold;
         }
         /* Achtergrondkleuren voor tijdperken */
         .grieken-era { background-color: #ffcccc; }
@@ -89,9 +89,9 @@
         .hedendaagse-tijd-era { background-color: #ccffff; }
         .timeline {
             position: relative;
-            margin-left: 150px; /* Ruimte voor de tijdperken */
-            width: 150px; /* Breedte voor de tijdlijn */
-            margin-right: 300px; /* Ruimte voor de items */
+            margin-left: 150px;
+            width: 150px;
+            margin-right: 300px;
         }
         .timeline-line {
             position: absolute;
@@ -99,13 +99,13 @@
             background-color: #333;
             top: 0;
             bottom: 0;
-            left: 50%; /* Gecentreerd in de tijdlijnzone */
+            left: 50%;
             transform: translateX(-50%);
         }
         .timeline-item {
             position: absolute;
-            width: auto; /* Automatische breedte */
-            max-width: 300px; /* Beperkt tot de toegewezen 300px voor items */
+            width: auto;
+            max-width: 300px;
             padding: 2px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -113,9 +113,9 @@
             font-size: 9px;
             z-index: 2;
             left: 50%;
-            margin-left: 40px; /* Afstand van de tijdlijn */
+            margin-left: 40px;
             text-align: left;
-            white-space: nowrap; /* Voorkom tekstterugloop */
+            white-space: nowrap;
         }
         .timeline-item h2 {
             font-size: 10px;
@@ -129,7 +129,6 @@
         .timeline-item p::before {
             content: " - ";
         }
-        /* Horizontale lijn naar de tijdlijn */
         .timeline-item::after {
             content: '';
             position: absolute;
@@ -139,15 +138,14 @@
             border: none;
             border-top: 1px dashed #666;
             top: 50%;
-            left: -40px; /* Verbindt item met tijdlijn */
+            left: -40px;
         }
-        /* Kleurcodes voor motoren */
         .religie { background-color: #ff9999; }
         .volkscultuur { background-color: #99ccff; }
         .lichaamscultuur { background-color: #99ff99; }
         .century-marker, .millennium-marker {
             position: absolute;
-            left: 50%; /* Gecentreerd in de tijdlijnzone */
+            left: 50%;
             transform: translateX(-50%);
             font-size: 12px;
             color: #666;
@@ -156,12 +154,12 @@
             border: 1px solid #ccc;
             border-radius: 3px;
             z-index: 1;
-            white-space: nowrap; /* Voorkom dat markeringen te breed worden */
+            white-space: nowrap;
         }
         .millennium-marker {
             font-weight: bold;
             color: #333;
-            font-size: 16.8px; /* 30% verkleind (was 24px) */
+            font-size: 16.8px;
         }
     </style>
 </head>
@@ -180,10 +178,9 @@
             <button class="filter-button lichaamscultuur-filter active" onclick="toggleMotor('Lichaamscultuur')">Lichaamscultuur</button>
         </div>
     </div>
-    <h1>Historische Tijdlijn van Gebeurtenissen</h1>
+    <h1>Verticale Historische Tijdlijn</h1>
     <div class="timeline-container">
         <div class="eras">
-            <!-- Tijdperken als statische labels -->
             <div class="era grieken-era" data-year-start="-2000" data-year-end="-400">
                 Grieken
             </div>
@@ -472,8 +469,8 @@
     </div>
 
     <script>
-        let zoomLevel = 4; // Standaard zoomniveau (Normaal)
-        let scale = 0.1; // Basis pixels per jaar
+        let zoomLevel = 4;
+        let scale = 0.1;
         let activeMotors = ['Religie', 'Volkscultuur', 'Lichaamscultuur'];
 
         function parseYear(yearStr) {
@@ -510,7 +507,6 @@
             let minYear = Infinity;
             let maxYear = -Infinity;
 
-            // Bepaal min en max jaar
             items.forEach(item => {
                 const year = parseYear(item.dataset.year);
                 if (year < minYear) minYear = year;
@@ -522,7 +518,6 @@
             timeline.style.height = timelineHeight + 'px';
             document.querySelector('.eras').style.height = timelineHeight + 'px';
 
-            // Positioneer items
             items.forEach(item => {
                 if (activeMotors.includes(item.dataset.motor)) {
                     item.style.display = 'block';
@@ -534,7 +529,6 @@
                 }
             });
 
-            // Positioneer tijdperken
             eras.forEach(era => {
                 const startYear = parseYear(era.dataset.yearStart);
                 const endYear = parseYear(era.dataset.yearEnd);
@@ -544,14 +538,13 @@
                 era.style.height = (endPosition - startPosition) + 'px';
             });
 
-            // Voeg markeringen toe
             addMarkers(minYear, maxYear, timelineHeight);
         }
 
         function addMarkers(minYear, maxYear, timelineHeight) {
             const timeline = document.querySelector('.timeline');
             const markers = document.querySelectorAll('.century-marker, .millennium-marker');
-            markers.forEach(marker => marker.remove()); // Verwijder bestaande markeringen
+            markers.forEach(marker => marker.remove());
 
             const startCentury = Math.ceil(minYear / 100) * 100;
             const endCentury = Math.floor(maxYear / 100) * 100;
@@ -578,7 +571,6 @@
             }
         }
 
-        // Start de tijdlijn
         updateTimeline();
     </script>
 </body>
