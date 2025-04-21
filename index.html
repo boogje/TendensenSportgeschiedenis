@@ -17,7 +17,7 @@
         h1 {
             text-align: center;
             color: #333;
-            margin-top: 60px; /* Ruimte voor vaste filterbalk */
+            margin-top: 80px; /* Ruimte voor de twee rijen in de werkbalk */
         }
         #toolbar {
             position: fixed;
@@ -28,6 +28,16 @@
             padding: 10px;
             z-index: 1000;
             text-align: center;
+        }
+        .toolbar-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .toolbar-label {
+            font-weight: bold;
+            margin-right: 10px;
         }
         .filter-button, .zoom-button {
             padding: 5px 10px;
@@ -46,20 +56,22 @@
         .lichaamscultuur-filter { background-color: #99ff99; }
         .timeline-container {
             position: relative;
+            width: 600px; /* Totale breedte van de tijdlijn */
+            margin: 0 auto; /* Centreer op de pagina */
             flex: 1;
             display: flex;
             margin-top: 20px;
         }
         .eras {
             position: absolute;
-            width: 100px;
+            width: 150px; /* Breedte voor tijdperken */
             left: 0;
             top: 0;
             bottom: 0;
         }
         .era {
             position: absolute;
-            width: 90px;
+            width: 140px; /* Iets smaller dan de container voor padding */
             padding: 5px;
             font-size: 12px;
             color: #333;
@@ -77,9 +89,9 @@
         .hedendaagse-tijd-era { background-color: #ccffff; }
         .timeline {
             position: relative;
-            margin-left: 100px; /* Ruimte voor de tijdperken */
-            margin-right: 450px; /* Breder gemaakt om overlap te voorkomen */
-            flex: 1;
+            margin-left: 150px; /* Ruimte voor de tijdperken */
+            width: 150px; /* Breedte voor de tijdlijn */
+            margin-right: 300px; /* Ruimte voor de items */
         }
         .timeline-line {
             position: absolute;
@@ -93,7 +105,7 @@
         .timeline-item {
             position: absolute;
             width: auto; /* Automatische breedte */
-            max-width: 600px; /* Maximale breedte voor lange teksten */
+            max-width: 300px; /* Beperkt tot de toegewezen 300px voor items */
             padding: 2px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -144,22 +156,29 @@
             border: 1px solid #ccc;
             border-radius: 3px;
             z-index: 1;
+            white-space: nowrap; /* Voorkom dat markeringen te breed worden */
         }
         .millennium-marker {
             font-weight: bold;
             color: #333;
-            font-size: 24px;
+            font-size: 16.8px; /* 30% verkleind (was 24px) */
         }
     </style>
 </head>
 <body>
     <div id="toolbar">
-        <button class="filter-button religie-filter active" onclick="toggleMotor('Religie')">Religie</button>
-        <button class="filter-button volkscultuur-filter active" onclick="toggleMotor('Volkscultuur')">Volkscultuur</button>
-        <button class="filter-button lichaamscultuur-filter active" onclick="toggleMotor('Lichaamscultuur')">Lichaamscultuur</button>
-        <button class="zoom-button" onclick="setZoom(2)">Overzicht</button>
-        <button class="zoom-button" onclick="setZoom(4)">Normaal</button>
-        <button class="zoom-button" onclick="setZoom(8)">Detail</button>
+        <div class="toolbar-row">
+            <span class="toolbar-label">Zoom</span>
+            <button class="zoom-button" onclick="setZoom(2)">Overzicht</button>
+            <button class="zoom-button" onclick="setZoom(4)">Normaal</button>
+            <button class="zoom-button" onclick="setZoom(8)">Detail</button>
+        </div>
+        <div class="toolbar-row">
+            <span class="toolbar-label">Filter</span>
+            <button class="filter-button religie-filter active" onclick="toggleMotor('Religie')">Religie</button>
+            <button class="filter-button volkscultuur-filter active" onclick="toggleMotor('Volkscultuur')">Volkscultuur</button>
+            <button class="filter-button lichaamscultuur-filter active" onclick="toggleMotor('Lichaamscultuur')">Lichaamscultuur</button>
+        </div>
     </div>
     <h1>Historische Tijdlijn van Gebeurtenissen</h1>
     <div class="timeline-container">
@@ -241,7 +260,7 @@
                     <p>Verhaal Kallipateira naaktheid</p>
                 </div>
             </div>
-            <div class="timeline-item religie" data-massotor="Religie" data-year="500">
+            <div class="timeline-item religie" data-motor="Religie" data-year="500">
                 <div class="content">
                     <h2>500 n.Chr.</h2>
                     <p>Einde van de Olympische spelen</p>
