@@ -171,7 +171,7 @@
             <button class="filter-button lichaamscultuur-filter active" onclick="toggleMotor('Lichaamscultuur')">Lichaamscultuur</button>
         </div>
     </div>
-    <h1>Verticale Historische Tijdlijn</h1>
+    <h1>Tijdlijn: Tendensen in de sportgeschiedenis</h1>
     <div class="timeline-container">
         <div class="eras">
             <div class="era grieken-era" data-year-start="-2000" data-year-end="-400">
@@ -495,7 +495,7 @@
 
         function updateTimeline() {
             const timeline = document.querySelector('.timeline');
-            const items = document.querySelectorAll('.timeline-item');
+            const items = Array.from(document.querySelectorAll('.timeline-item'));
             const eras = document.querySelectorAll('.era');
             let minYear = Infinity;
             let maxYear = -Infinity;
@@ -504,17 +504,28 @@
             const existingLines = document.querySelectorAll('.connector-line');
             existingLines.forEach(line => line.remove());
 
-            // Bepaal min en max jaar
+            // Bepaal min en max jaar (alleen voor zichtbare items)
             items.forEach(item => {
-                const year = parseYear(item.dataset.year);
-                if (year < minYear) minYear = year;
-                if (year > maxYear) maxYear = year;
+                if (activeMotors.includes(item.dataset.motor)) {
+                    const year = parseYear(item.dataset.year);
+                    if (year < minYear) minYear = year;
+                    if (year > maxYear) maxYear = year;
+                }
             });
+
+            // Als er geen zichtbare items zijn, stel een fallback in
+            if (minYear === Infinity || maxYear === -Infinity) {
+                minYear = -2000;
+                maxYear = 2000;
+            }
 
             const totalYears = maxYear - minYear;
             const timelineHeight = totalYears * scale * zoomLevel;
             timeline.style.height = timelineHeight + 'px';
             document.querySelector('.eras').style.height = timelineHeight + 'px';
+
+            // Sorteer items op jaar (van oud naar nieuw)
+            items.sort((a, b) => parseYear(a.dataset.year) - parseYear(b.dataset.year));
 
             // Positioneer items en voorkom overlap door verticale verschuiving
             let positions = [];
@@ -525,21 +536,29 @@
                     let position = (year - minYear) * scale * zoomLevel;
 
                     // Voorkom verticale overlap door verticale verschuiving
-                    let verticalShift = 0;
                     const itemHeight = item.offsetHeight;
+                    let verticalShift = 0;
+
+                    // Controleer overlap met eerdere posities
                     positions.forEach(pos => {
-                        if (Math.abs(position - pos.y) < 5) { // Drempel verlaagd naar 5px
-                            verticalShift += itemHeight; // Verschuif met de hoogte van het item
+                        const posTop = pos.y;
+                        const posBottom = pos.y + pos.height;
+                        const currentTop = position;
+                        const currentBottom = position + itemHeight;
+
+                        // Controleer of het huidige item overlapt met een eerder item
+                        if (Math.abs(currentTop - posTop) < 5 || (currentTop >= posTop && currentTop < posBottom)) {
+                            // Verschuif naar de onderkant van het vorige item
+                            verticalShift = Math.max(verticalShift, posBottom - position + 5);
                         }
                     });
+
                     position += verticalShift;
                     item.style.top = position + 'px';
-                    positions.push({ y: position });
+                    positions.push({ y: position, height: itemHeight });
 
                     // Teken een schuine SVG-lijn van het item naar de tijdlijn
                     const timelineLineX = 75; // left: 50% van de 150px brede .timeline (midden van de tijdlijn)
-                    const itemHeight = item.offsetHeight;
-                    const itemWidth = item.offsetWidth;
                     const itemX = timelineLineX + 90; // Startpunt van de lijn (midden van het item, vaste margin-left)
                     const itemY = position + itemHeight / 2; // Verticaal midden van het item
                     const timelineY = (year - minYear) * scale * zoomLevel; // Het oorspronkelijke punt op de tijdlijn
