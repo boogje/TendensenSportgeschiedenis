@@ -1,5 +1,5 @@
 year,motor,title,description
--2000,Religie,2000 v.Chr.,Test Kreta en Mykene, eerste wortels van sport
+-2000,Religie,2000 v.Chr.,Kreta en Mykene, eerste wortels van sport
 -1200,Religie,1200 v.Chr.,Archaïsche periode (ouder Grieken)
 -1200,Religie,1200 v.Chr.,Spelen van Patroklos Mythe
 -776,Religie,776 v.Chr.,Eerste Griekse spelen in Olympia: mythe Zeus
@@ -8,7 +8,6 @@ year,motor,title,description
 -570,Religie,570 v.Chr.,Olympische Spelen in Elis (ervoor in Pisa)
 -500,Religie,500 v.Chr.,Start van de Panhelleense spelen
 -400,Religie,400 v.Chr.,Verhaal Kallipateira naaktheid
-500,Religie,500 n.Chr.,Einde van de Olympische spelen
 -300,Volkscultuur,300 v.Chr.,Melding van de eerste gladiatorengevechten
 -275,Volkscultuur,275 v.Chr.,Romeinen maken kennis met exotische dieren
 -200,Volkscultuur,200 v.Chr.,Stijging populariteit van de Romeinse spelen met gladiatoren
@@ -18,6 +17,7 @@ year,motor,title,description
 86,Volkscultuur,86 n.Chr.,Keizer Domitianus richt Captiolische spelen op
 350,Volkscultuur,350 n.Chr.,Daling populariteit gladiatorengevechten door Christendom
 500,Volkscultuur,500 n.Chr.,Einde van de Romeinse spelen
+500,Religie,500 n.Chr.,Einde van de Olympische spelen
 500,Volkscultuur,500 n.Chr.,Eerste volksspelen op pleinen en markten
 1100,Religie,1100 n.Chr.,Opkomst riddertornooien
 1167,Religie,1167 n.Chr.,Willem De Maarschalk wint riddertornooi
