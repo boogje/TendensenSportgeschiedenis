@@ -323,19 +323,21 @@
             // Sorteer items op jaar (van oud naar nieuw)
             items.sort((a, b) => parseYear(a.dataset.year) - parseYear(b.dataset.year));
 
-            // Positioneer items en voorkom overlap door verticale verschuiving
+            // Globale posities voor overlap-controle
             let positions = [];
+
             items.forEach(item => {
+                // Alleen items verwerken die overeenkomen met actieve motoren
                 if (activeMotors.includes(item.dataset.motor)) {
                     item.style.display = 'block';
                     const year = parseYear(item.dataset.year);
                     let position = (year - minYear) * scale * zoomLevel;
 
-                    // Voorkom verticale overlap door verticale verschuiving
+                    // Voorkom overlap door verticale verschuiving
                     const itemHeight = item.offsetHeight;
                     let verticalShift = 0;
 
-                    // Controleer overlap met eerdere posities
+                    // Controleer overlap met alle eerdere posities (ongeacht motor)
                     positions.forEach(pos => {
                         const posTop = pos.y;
                         const posBottom = pos.y + pos.height;
@@ -351,6 +353,8 @@
 
                     position += verticalShift;
                     item.style.top = position + 'px';
+
+                    // Voeg de nieuwe positie toe aan de globale posities
                     positions.push({ y: position, height: itemHeight });
 
                     // Teken een schuine SVG-lijn van het item naar de tijdlijn
