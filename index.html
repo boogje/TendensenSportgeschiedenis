@@ -526,9 +526,10 @@
 
                     // Voorkom verticale overlap door verticale verschuiving
                     let verticalShift = 0;
+                    const itemHeight = item.offsetHeight;
                     positions.forEach(pos => {
-                        if (Math.abs(position - pos.y) < 30) { // Controleer op verticale overlap
-                            verticalShift += 30; // Verschuif 30px naar beneden
+                        if (Math.abs(position - pos.y) < 5) { // Drempel verlaagd naar 5px
+                            verticalShift += itemHeight; // Verschuif met de hoogte van het item
                         }
                     });
                     position += verticalShift;
