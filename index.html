@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verticale Historische Tijdlijn</title>
+    <title>Tijdlijn: Tendensen in de sportgeschiedenis</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -113,7 +113,7 @@
             font-size: 9px;
             z-index: 2;
             left: 50%;
-            margin-left: 90px; /* Basispositie */
+            margin-left: 90px; /* Vaste positie naar rechts */
             text-align: left;
             white-space: nowrap;
         }
@@ -516,41 +516,41 @@
             timeline.style.height = timelineHeight + 'px';
             document.querySelector('.eras').style.height = timelineHeight + 'px';
 
-            // Positioneer items en voorkom overlap door horizontale verschuiving
+            // Positioneer items en voorkom overlap door verticale verschuiving
             let positions = [];
             items.forEach(item => {
                 if (activeMotors.includes(item.dataset.motor)) {
                     item.style.display = 'block';
                     const year = parseYear(item.dataset.year);
-                    const position = (year - minYear) * scale * zoomLevel;
-                    item.style.top = position + 'px';
+                    let position = (year - minYear) * scale * zoomLevel;
 
-                    // Voorkom verticale overlap door horizontale verschuiving
-                    let horizontalShift = 90; // Basis margin-left
+                    // Voorkom verticale overlap door verticale verschuiving
+                    let verticalShift = 0;
                     positions.forEach(pos => {
                         if (Math.abs(position - pos.y) < 30) { // Controleer op verticale overlap
-                            horizontalShift += 50; // Verschuif 50px naar rechts
+                            verticalShift += 30; // Verschuif 30px naar beneden
                         }
                     });
-                    item.style.marginLeft = horizontalShift + 'px';
-                    positions.push({ y: position, shift: horizontalShift });
+                    position += verticalShift;
+                    item.style.top = position + 'px';
+                    positions.push({ y: position });
 
                     // Teken een schuine SVG-lijn van het item naar de tijdlijn
                     const timelineLineX = 75; // left: 50% van de 150px brede .timeline (midden van de tijdlijn)
                     const itemHeight = item.offsetHeight;
                     const itemWidth = item.offsetWidth;
-                    const itemX = timelineLineX + horizontalShift; // Startpunt van de lijn (midden van het item)
+                    const itemX = timelineLineX + 90; // Startpunt van de lijn (midden van het item, vaste margin-left)
                     const itemY = position + itemHeight / 2; // Verticaal midden van het item
-                    const timelineY = position; // Het punt op de tijdlijn
+                    const timelineY = (year - minYear) * scale * zoomLevel; // Het oorspronkelijke punt op de tijdlijn
 
                     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                     svg.setAttribute("class", "connector-line");
-                    svg.setAttribute("style", `position: absolute; top: ${position}px; left: ${timelineLineX}px; width: ${horizontalShift}px; height: ${itemHeight}px;`);
+                    svg.setAttribute("style", `position: absolute; top: ${timelineY}px; left: ${timelineLineX}px; width: ${90}px; height: ${Math.abs(itemY - timelineY) + itemHeight / 2}px;`);
                     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                     line.setAttribute("x1", "0");
-                    line.setAttribute("y1", itemHeight / 2);
-                    line.setAttribute("x2", horizontalShift);
-                    line.setAttribute("y2", itemHeight / 2);
+                    line.setAttribute("y1", "0");
+                    line.setAttribute("x2", "90");
+                    line.setAttribute("y2", itemY - timelineY);
                     line.setAttribute("stroke", "#666");
                     line.setAttribute("stroke-width", "1");
                     line.setAttribute("stroke-dasharray", "5,5");
