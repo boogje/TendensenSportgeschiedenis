@@ -16,7 +16,7 @@
         h1 {
             text-align: center;
             color: #333;
-            margin-top: 80px;
+            margin-top: 80px; /* Ruimte voor werkbalk */
         }
         #toolbar {
             position: fixed;
@@ -55,9 +55,9 @@
         .timeline-container {
             position: relative;
             width: 100%;
-            height: 600px;
+            height: 800px; /* Verhoogd voor meer ruimte voor items */
             margin-top: 20px;
-            overflow-x: auto;
+            overflow-x: auto; /* Horizontaal scrollen */
         }
         .eras {
             position: absolute;
@@ -76,13 +76,17 @@
             font-weight: bold;
             border: 1px solid #ccc;
         }
+        /* Achtergrondkleuren voor tijdperken */
         .grieken-era { background-color: #ffcccc; }
         .romeinen-era { background-color: #ccccff; }
         .middeleeuwen-era { background-color: #ccffcc; }
+        .vroegmoderne-tijd-era { background-color: #ffffcc; }
+        .moderne-tijd-era { background-color: #ffccff; }
+        .hedendaagse-tijd-era { background-color: #ccffff; }
         .timeline {
-            position: relative;
-            height: 200px;
-            top: 50px;
+            position: absolute;
+            height: 100px; /* Ruimte voor tijdlijn en markeringen */
+            top: 50px; /* Direct onder de tijdperken */
             left: 0;
             right: 0;
         }
@@ -90,7 +94,7 @@
             position: absolute;
             height: 2px;
             background-color: #333;
-            top: 50%;
+            top: 50px; /* Midden van de tijdlijnzone */
             left: 0;
             right: 0;
         }
@@ -102,7 +106,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 9px;
-            top: 60px;
+            top: 110px; /* Onder de tijdlijn */
             text-align: left;
             white-space: nowrap;
         }
@@ -125,16 +129,17 @@
             height: 20px;
             background: #666;
             border-left: 1px dashed #666;
-            top: -20px;
+            top: -20px; /* Verbindt item met tijdlijn */
             left: 50%;
             transform: translateX(-50%);
         }
+        /* Kleurcodes voor motoren */
         .religie { background-color: #ff9999; }
         .volkscultuur { background-color: #99ccff; }
         .lichaamscultuur { background-color: #99ff99; }
         .century-marker, .millennium-marker {
             position: absolute;
-            top: 50%;
+            top: 50px; /* Uitgelijnd met de tijdlijn */
             transform: translateY(-50%) rotate(90deg); /* Op hun zijde */
             transform-origin: left top;
             font-size: 12px;
@@ -148,7 +153,7 @@
         .millennium-marker {
             font-weight: bold;
             color: #333;
-            font-size: 16.8px;
+            font-size: 16.8px; /* 30% verkleind */
         }
     </style>
 </head>
@@ -170,33 +175,297 @@
     <h1>Horizontale Historische Tijdlijn</h1>
     <div class="timeline-container">
         <div class="eras">
-            <div class="era grieken-era" data-year-start="-2000" data-year-end="-400">Grieken</div>
-            <div class="era romeinen-era" data-year-start="-300" data-year-end="500">Romeinen</div>
-            <div class="era middeleeuwen-era" data-year-start="500" data-year-end="1490">Middeleeuwen</div>
+            <!-- Tijdperken als statische labels -->
+            <div class="era grieken-era" data-year-start="-2000" data-year-end="-400">
+                Grieken
+            </div>
+            <div class="era romeinen-era" data-year-start="-300" data-year-end="500">
+                Romeinen
+            </div>
+            <div class="era middeleeuwen-era" data-year-start="500" data-year-end="1490">
+                Middeleeuwen
+            </div>
+            <div class="era vroegmoderne-tijd-era" data-year-start="1500" data-year-end="1800">
+                Vroeg moderne tijd
+            </div>
+            <div class="era moderne-tijd-era" data-year-start="1800" data-year-end="1900">
+                Moderne tijd
+            </div>
+            <div class="era hedendaagse-tijd-era" data-year-start="1900" data-year-end="2000">
+                Hedendaagse tijd
+            </div>
         </div>
         <div class="timeline">
             <div class="timeline-line"></div>
+            <!-- Griekse Periode -->
             <div class="timeline-item religie" data-motor="Religie" data-year="-2000">
-                <h2>2000 v.Chr.</h2><p>Kreta en Mykene</p>
+                <div class="content">
+                    <h2>2000 v.Chr.</h2>
+                    <p>Kreta en Mykene, eerste wortels van sport</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-1200">
+                <div class="content">
+                    <h2>1200 v.Chr.</h2>
+                    <p>Archaïsche periode (ouder Grieken)</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-1200">
+                <div class="content">
+                    <h2>1200 v.Chr.</h2>
+                    <p>Spelen van Patroklos Mythe</p>
+                </div>
             </div>
             <div class="timeline-item religie" data-motor="Religie" data-year="-776">
-                <h2>776 v.Chr.</h2><p>Eerste Olympische Spelen</p>
+                <div class="content">
+                    <h2>776 v.Chr.</h2>
+                    <p>Eerste Griekse spelen in Olympia: mythe Zeus</p>
+                </div>
             </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="-720">
+                <div class="content">
+                    <h2>720 v.Chr.</h2>
+                    <p>Pausanias verhaal Orsippos: naaktheid verklaren</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-700">
+                <div class="content">
+                    <h2>700 v.Chr.</h2>
+                    <p>Mythe van Pelops en Oinomaos</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-570">
+                <div class="content">
+                    <h2>570 v.Chr.</h2>
+                    <p>Olympische Spelen in Elis (ervoor in Pisa)</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-500">
+                <div class="content">
+                    <h2>500 v.Chr.</h2>
+                    <p>Start van de Panhelleense spelen</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-400">
+                <div class="content">
+                    <h2>400 v.Chr.</h2>
+                    <p>Verhaal Kallipateira naaktheid</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="500">
+                <div class="content">
+                    <h2>500 n.Chr.</h2>
+                    <p>Einde van de Olympische spelen</p>
+                </div>
+            </div>
+
+            <!-- Romeinse Periode -->
             <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-300">
-                <h2>300 v.Chr.</h2><p>Gladiatorengevechten</p>
+                <div class="content">
+                    <h2>300 v.Chr.</h2>
+                    <p>Melding van de eerste gladiatorengevechten</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-275">
+                <div class="content">
+                    <h2>275 v.Chr.</h2>
+                    <p>Romeinen maken kennis met exotische dieren</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-200">
+                <div class="content">
+                    <h2>200 v.Chr.</h2>
+                    <p>Stijging populariteit van de Romeinse spelen met gladiatoren</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-146">
+                <div class="content">
+                    <h2>146 v.Chr.</h2>
+                    <p>Verovering Griekenland door Romeinen</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-63">
+                <div class="content">
+                    <h2>63 v.Chr.</h2>
+                    <p>Keizer Augustus</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="67">
+                <div class="content">
+                    <h2>67 n.Chr.</h2>
+                    <p>Keizer Nero verplaatst de Olympische spelen een jaar</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="86">
+                <div class="content">
+                    <h2>86 n.Chr.</h2>
+                    <p>Keizer Domitianus richt Captiolische spelen op</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="350">
+                <div class="content">
+                    <h2>350 n.Chr.</h2>
+                    <p>Daling populariteit gladiatorengevechten door Christendom</p>
+                </div>
             </div>
             <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="500">
-                <h2>500 n.Chr.</h2><p>Volksspelen</p>
+                <div class="content">
+                    <h2>500 n.Chr.</h2>
+                    <p>Einde van de Romeinse spelen</p>
+                </div>
             </div>
-            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1000">
-                <h2>1000 n.Chr.</h2><p>Riddertornooien</p>
+
+            <!-- Middeleeuwen -->
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="500">
+                <div class="content">
+                    <h2>500 n.Chr.</h2>
+                    <p>Eerste volksspelen op pleinen en markten</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1100">
+                <div class="content">
+                    <h2>1100 n.Chr.</h2>
+                    <p>Opkomst riddertornooien</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1167">
+                <div class="content">
+                    <h2>1167 n.Chr.</h2>
+                    <p>Willem De Maarschalk wint riddertornooi</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1200">
+                <div class="content">
+                    <h2>1200 n.Chr.</h2>
+                    <p>12de en 13de eeuw: Christenen tegen riddertornooien</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1250">
+                <div class="content">
+                    <h2>1250 n.Chr.</h2>
+                    <p>Evolutie tornooi: lanssteekspel en gevecht met zwaard</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1442">
+                <div class="content">
+                    <h2>1442 n.Chr.</h2>
+                    <p>Verfijnen puntensysteem riddertornooien</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1490">
+                <div class="content">
+                    <h2>1490 n.Chr.</h2>
+                    <p>Einde 15de -16de eeuw: riddertornooien verdwijnen</p>
+                </div>
+            </div>
+
+            <!-- Vroeg moderne tijd -->
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1500">
+                <div class="content">
+                    <h2>1500 n.Chr.</h2>
+                    <p>Tudortijd met Middeleeuws knokvoetbal</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1500">
+                <div class="content">
+                    <h2>1500 n.Chr.</h2>
+                    <p>Volks- en kroegspelen worden belangrijker: herbergen, drukpers, handel</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1560">
+                <div class="content">
+                    <h2>1560 n.Chr.</h2>
+                    <p>Schilderij Pieter Breughel 'kinderspelen'</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Katholieke kerk begint sport en beweging te stimuleren</p>
+                </div>
+            </div>
+
+            <!-- Moderne tijd -->
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Opkomst van volksspelen en georganiseerde competities</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Maakbaarheid van de mens met opkomst 'gymnastiek'</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1800">
+                <div class="content">
+                    <h2>1800 n.Chr.</h2>
+                    <p>Begin 19de E: Duitse gym met Jahn.</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1810">
+                <div class="content">
+                    <h2>1810 n.Chr.</h2>
+                    <p>Ontstaan Zweedse gymnastiek met Ling in Zweden</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1850">
+                <div class="content">
+                    <h2>1850 n.Chr.</h2>
+                    <p>Nut lichamelijke opvoeding voor jongens door Katholieke geestelijken</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1850">
+                <div class="content">
+                    <h2>1850 n.Chr.</h2>
+                    <p>Aandacht voor 'homo ludens'</p>
+                </div>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="1896">
+                <div class="content">
+                    <h2>1896 n.Chr.</h2>
+                    <p>Eerste moderne Olympische Spelen in Athene</p>
+                </div>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1900">
+                <div class="content">
+                    <h2>1900 n.Chr.</h2>
+                    <p>Ontstaan gymzalen en 'Ecoles de culture physique'</p>
+                </div>
+            </div>
+
+            <!-- Hedendaagse tijd -->
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1946">
+                <div class="content">
+                    <h2>1946 n.Chr.</h2>
+                    <p>Le mouvement culturiste Belge van Prosper Creyae en GeorgesDardenne</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1966">
+                <div class="content">
+                    <h2>1966 n.Chr.</h2>
+                    <p>Europees handvest sport voor Allen</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="1981">
+                <div class="content">
+                    <h2>1981 n.Chr.</h2>
+                    <p>Herwaardering van Vlaamse volkssporten</p>
+                </div>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="2000">
+                <div class="content">
+                    <h2>2000 n.Chr.</h2>
+                    <p>Terugval volkssporten, promotie door Volkssportcentrale</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let zoomLevel = 4;
-        let scale = 0.1;
+        let zoomLevel = 4; // Standaard zoomniveau (Normaal)
+        let scale = 0.1; // Basis pixels per jaar
         let activeMotors = ['Religie', 'Volkscultuur', 'Lichaamscultuur'];
 
         function parseYear(yearStr) {
@@ -227,6 +496,7 @@
             let minYear = Infinity;
             let maxYear = -Infinity;
 
+            // Bepaal min en max jaar
             items.forEach(item => {
                 const year = parseYear(item.dataset.year);
                 if (year < minYear) minYear = year;
@@ -238,6 +508,7 @@
             timeline.style.width = timelineWidth + 'px';
             document.querySelector('.eras').style.width = timelineWidth + 'px';
 
+            // Positioneer items en voorkom overlap
             let positions = [];
             items.forEach(item => {
                 if (activeMotors.includes(item.dataset.motor)) {
@@ -246,19 +517,21 @@
                     const position = (year - minYear) * scale * zoomLevel;
                     item.style.left = position + 'px';
 
+                    // Voorkom horizontale overlap door verticaal te verschuiven
                     let verticalShift = 0;
                     positions.forEach(pos => {
-                        if (Math.abs(position - pos.x) < 50) {
+                        if (Math.abs(position - pos.x) < 50) { // Controleer op overlap
                             verticalShift += 30;
                         }
                     });
-                    item.style.top = (60 + verticalShift) + 'px';
+                    item.style.top = (110 + verticalShift) + 'px';
                     positions.push({ x: position, width: item.offsetWidth });
                 } else {
                     item.style.display = 'none';
                 }
             });
 
+            // Positioneer tijdperken
             eras.forEach(era => {
                 const startYear = parseYear(era.dataset.yearStart);
                 const endYear = parseYear(era.dataset.yearEnd);
@@ -268,13 +541,14 @@
                 era.style.width = (endPosition - startPosition) + 'px';
             });
 
+            // Voeg markeringen toe
             addMarkers(minYear, maxYear, timelineWidth);
         }
 
         function addMarkers(minYear, maxYear, timelineWidth) {
             const timeline = document.querySelector('.timeline');
             const markers = document.querySelectorAll('.century-marker, .millennium-marker');
-            markers.forEach(marker => marker.remove());
+            markers.forEach(marker => marker.remove()); // Verwijder bestaande markeringen
 
             const startCentury = Math.ceil(minYear / 100) * 100;
             const endCentury = Math.floor(maxYear / 100) * 100;
@@ -287,8 +561,21 @@
                 marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
                 timeline.appendChild(marker);
             }
+
+            const startMillennium = Math.ceil(minYear / 1000) * 1000;
+            const endMillennium = Math.floor(maxYear / 1000) * 1000;
+
+            for (let year = startMillennium; year <= endMillennium; year += 1000) {
+                const position = (year - minYear) * scale * zoomLevel;
+                const marker = document.createElement('div');
+                marker.className = 'millennium-marker';
+                marker.style.left = position + 'px';
+                marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
+                timeline.appendChild(marker);
+            }
         }
 
+        // Start de tijdlijn
         updateTimeline();
     </script>
 </body>
