@@ -134,7 +134,7 @@
         .lichaamscultuur { background-color: #99ff99; }
         .century-marker, .millennium-marker {
             position: absolute;
-            left: -60px; /* Plaats verder links om overlap te vermijden */
+            left: -60px; /* Startpositie, wordt dynamisch aangepast in JS */
             font-size: 12px;
             color: #666;
             background-color: rgba(255, 255, 255, 0.8);
@@ -339,6 +339,7 @@
 
             // Globale posities voor overlap-controle
             let positions = [];
+            let lastPosition = -Infinity; // Houd de laagste positie bij
 
             // Eerst alle items verbergen, dan opnieuw positioneren
             items.forEach(item => {
@@ -354,24 +355,30 @@
 
                     // Voorkom overlap door verticale verschuiving
                     const itemHeight = item.offsetHeight;
-                    let verticalShift = 0;
 
-                    // Controleer overlap met alle eerdere posities (ongeacht motor)
+                    // Zorg ervoor dat het item altijd onder het vorige item komt
+                    if (position < lastPosition + itemHeight + 5) {
+                        position = lastPosition + itemHeight + 5; // Minimaal 5px ruimte
+                    }
+
+                    // Controleer overlap met alle eerdere posities (voor extra zekerheid)
+                    let verticalShift = 0;
                     positions.forEach(pos => {
                         const posTop = pos.y;
                         const posBottom = pos.y + pos.height;
                         const currentTop = position;
                         const currentBottom = position + itemHeight;
 
-                        // Controleer of het huidige item overlapt met een eerder item
                         if (currentBottom > posTop && currentTop < posBottom) {
-                            // Verschuif naar de onderkant van het vorige item
                             verticalShift = Math.max(verticalShift, posBottom - position + 5);
                         }
                     });
 
                     position += verticalShift;
                     item.style.top = position + 'px';
+
+                    // Update de laagste positie
+                    lastPosition = position;
 
                     // Voeg de nieuwe positie toe aan de globale posities
                     positions.push({ y: position, height: itemHeight });
@@ -415,7 +422,7 @@
                     line.setAttribute("x2", itemX.toString());
                     line.setAttribute("y2", lineY2.toString());
                     line.setAttribute("stroke", lineColor);
-                    line.setAttribute("stroke-width", "2"); // Dikkere lijn voor betere zichtbaarheid
+                    line.setAttribute("stroke-width", "2");
                     line.setAttribute("stroke-dasharray", "5,5");
                     svg.appendChild(line);
 
@@ -423,7 +430,7 @@
                     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                     circle.setAttribute("cx", "0");
                     circle.setAttribute("cy", lineY1.toString());
-                    circle.setAttribute("r", "4"); // Groter bolletje voor betere zichtbaarheid
+                    circle.setAttribute("r", "4");
                     circle.setAttribute("fill", lineColor);
                     svg.appendChild(circle);
 
@@ -459,10 +466,13 @@
                 const position = (year - minYear) * scale * zoomLevel;
                 const marker = document.createElement('div');
                 marker.className = 'century-marker';
-                // Centreer de markering verticaal door de top-positie aan te passen
-                marker.style.top = (position - 8) + 'px'; // Ongeveer de helft van de hoogte van de markering (schatting 16px)
+                marker.style.top = (position - 8) + 'px'; // Centreer verticaal
                 marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
                 timeline.appendChild(marker);
+
+                // Rechts uitlijnen: bereken de breedte van de markering en pas de left-positie aan
+                const markerWidth = marker.offsetWidth;
+                marker.style.left = `-${markerWidth + 5}px`; // 5px ruimte tot de tijdlijn
 
                 // Voeg een kort streepje toe op de tijdlijn
                 const tick = document.createElement('div');
@@ -478,10 +488,13 @@
                 const position = (year - minYear) * scale * zoomLevel;
                 const marker = document.createElement('div');
                 marker.className = 'millennium-marker';
-                // Centreer de markering verticaal door de top-positie aan te passen
-                marker.style.top = (position - 12) + 'px'; // Ongeveer de helft van de hoogte van de markering (schatting 24px)
+                marker.style.top = (position - 12) + 'px'; // Centreer verticaal
                 marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
                 timeline.appendChild(marker);
+
+                // Rechts uitlijnen: bereken de breedte van de markering en pas de left-positie aan
+                const markerWidth = marker.offsetWidth;
+                marker.style.left = `-${markerWidth + 5}px`; // 5px ruimte tot de tijdlijn
 
                 // Voeg een kort streepje toe op de tijdlijn
                 const tick = document.createElement('div');
