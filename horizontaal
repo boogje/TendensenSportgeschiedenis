@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontale Historische Tijdlijn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 80px; /* Ruimte voor werkbalk */
+        }
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 10px;
+            z-index: 1000;
+            text-align: center;
+        }
+        .toolbar-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .toolbar-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .filter-button, .zoom-button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .filter-button.active {
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.2);
+        }
+        .religie-filter { background-color: #ff9999; }
+        .volkscultuur-filter { background-color: #99ccff; }
+        .lichaamscultuur-filter { background-color: #99ff99; }
+        .timeline-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            margin-top: 20px;
+            overflow-x: auto; /* Horizontaal scrollen */
+        }
+        .eras {
+            position: absolute;
+            height: 50px;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .era {
+            position: absolute;
+            height: 40px;
+            padding: 5px;
+            font-size: 12px;
+            color: #333;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ccc;
+        }
+        .grieken-era { background-color: #ffcccc; }
+        .romeinen-era { background-color: #ccccff; }
+        .middeleeuwen-era { background-color: #ccffcc; }
+        .timeline {
+            position: relative;
+            height: 100px;
+            top: 50px;
+            left: 0;
+            right: 0;
+        }
+        .timeline-line {
+            position: absolute;
+            height: 2px;
+            background-color: #333;
+            top: 50%;
+            left: 0;
+            right: 0;
+        }
+        .timeline-item {
+            position: absolute;
+            width: auto;
+            max-width: 200px;
+            padding: 2px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 9px;
+            top: 60px; /* Onder de tijdlijn */
+            text-align: left;
+            white-space: nowrap;
+        }
+        .timeline-item h2 {
+            font-size: 10px;
+            margin: 0;
+            display: inline;
+        }
+        .timeline-item p {
+            margin: 0;
+            display: inline;
+        }
+        .timeline-item p::before {
+            content: " - ";
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 1px;
+            height: 20px;
+            background: #666;
+            border-left: 1px dashed #666;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .religie { background-color: #ff9999; }
+        .volkscultuur { background-color: #99ccff; }
+        .lichaamscultuur { background-color: #99ff99; }
+        .century-marker, .millennium-marker {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #666;
+            background-color: #fff;
+            padding: 2px 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        .millennium-marker {
+            font-weight: bold;
+            color: #333;
+            font-size: 16.8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <div class="toolbar-row">
+            <span class="toolbar-label">Zoom</span>
+            <button class="zoom-button" onclick="setZoom(2)">Overzicht</button>
+            <button class="zoom-button" onclick="setZoom(4)">Normaal</button>
+            <button class="zoom-button" onclick="setZoom(8)">Detail</button>
+        </div>
+        <div class="toolbar-row">
+            <span class="toolbar-label">Filter</span>
+            <button class="filter-button religie-filter active" onclick="toggleMotor('Religie')">Religie</button>
+            <button class="filter-button volkscultuur-filter active" onclick="toggleMotor('Volkscultuur')">Volkscultuur</button>
+            <button class="filter-button lichaamscultuur-filter active" onclick="toggleMotor('Lichaamscultuur')">Lichaamscultuur</button>
+        </div>
+    </div>
+    <h1>Horizontale Historische Tijdlijn</h1>
+    <div class="timeline-container">
+        <div class="eras">
+            <div class="era grieken-era" data-year-start="-2000" data-year-end="-400">Grieken</div>
+            <div class="era romeinen-era" data-year-start="-300" data-year-end="500">Romeinen</div>
+            <div class="era middeleeuwen-era" data-year-start="500" data-year-end="1490">Middeleeuwen</div>
+        </div>
+        <div class="timeline">
+            <div class="timeline-line"></div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-2000">
+                <h2>2000 v.Chr.</h2><p>Kreta en Mykene</p>
+            </div>
+            <div class="timeline-item religie" data-motor="Religie" data-year="-776">
+                <h2>776 v.Chr.</h2><p>Eerste Olympische Spelen</p>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="-300">
+                <h2>300 v.Chr.</h2><p>Gladiatorengevechten</p>
+            </div>
+            <div class="timeline-item volkscultuur" data-motor="Volkscultuur" data-year="500">
+                <h2>500 n.Chr.</h2><p>Volksspelen</p>
+            </div>
+            <div class="timeline-item lichaamscultuur" data-motor="Lichaamscultuur" data-year="1000">
+                <h2>1000 n.Chr.</h2><p>Riddertornooien</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let zoomLevel = 4; // Standaard zoomniveau
+        let scale = 0.1; // Pixels per jaar
+        let activeMotors = ['Religie', 'Volkscultuur', 'Lichaamscultuur'];
+
+        function parseYear(yearStr) {
+            return parseInt(yearStr);
+        }
+
+        function setZoom(newZoom) {
+            zoomLevel = newZoom;
+            updateTimeline();
+        }
+
+        function toggleMotor(motor) {
+            const button = document.querySelector(`.filter-button[onclick="toggleMotor('${motor}')"]`);
+            if (activeMotors.includes(motor)) {
+                activeMotors = activeMotors.filter(m => m !== motor);
+                button.classList.remove('active');
+            } else {
+                activeMotors.push(motor);
+                button.classList.add('active');
+            }
+            updateTimeline();
+        }
+
+        function updateTimeline() {
+            const timeline = document.querySelector('.timeline');
+            const items = document.querySelectorAll('.timeline-item');
+            const eras = document.querySelectorAll('.era');
+            let minYear = Infinity;
+            let maxYear = -Infinity;
+
+            items.forEach(item => {
+                const year = parseYear(item.dataset.year);
+                if (year < minYear) minYear = year;
+                if (year > maxYear) maxYear = year;
+            });
+
+            const totalYears = maxYear - minYear;
+            const timelineWidth = totalYears * scale * zoomLevel;
+            timeline.style.width = timelineWidth + 'px';
+            document.querySelector('.eras').style.width = timelineWidth + 'px';
+
+            items.forEach(item => {
+                if (activeMotors.includes(item.dataset.motor)) {
+                    item.style.display = 'block';
+                    const year = parseYear(item.dataset.year);
+                    const position = (year - minYear) * scale * zoomLevel;
+                    item.style.left = position + 'px';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            eras.forEach(era => {
+                const startYear = parseYear(era.dataset.yearStart);
+                const endYear = parseYear(era.dataset.yearEnd);
+                const startPosition = (startYear - minYear) * scale * zoomLevel;
+                const endPosition = (endYear - minYear) * scale * zoomLevel;
+                era.style.left = startPosition + 'px';
+                era.style.width = (endPosition - startPosition) + 'px';
+            });
+
+            addMarkers(minYear, maxYear, timelineWidth);
+        }
+
+        function addMarkers(minYear, maxYear, timelineWidth) {
+            const timeline = document.querySelector('.timeline');
+            const markers = document.querySelectorAll('.century-marker, .millennium-marker');
+            markers.forEach(marker => marker.remove());
+
+            const startCentury = Math.ceil(minYear / 100) * 100;
+            const endCentury = Math.floor(maxYear / 100) * 100;
+
+            for (let year = startCentury; year <= endCentury; year += 100) {
+                const position = (year - minYear) * scale * zoomLevel;
+                const marker = document.createElement('div');
+                marker.className = 'century-marker';
+                marker.style.left = position + 'px';
+                marker.textContent = year + (year < 0 ? ' v.Chr.' : ' n.Chr.');
+                timeline.appendChild(marker);
+            }
+        }
+
+        updateTimeline();
+    </script>
+</body>
+</html>
