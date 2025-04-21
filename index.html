@@ -142,7 +142,7 @@
             padding: 2px 5px;
             border: 1px solid #ccc;
             border-radius: 3px;
-            z-index: 2; /* Verlaagd van 3 naar 2 */
+            z-index: 2;
             white-space: nowrap;
         }
         .millennium-marker {
@@ -152,7 +152,7 @@
         }
         .connector-line {
             position: absolute;
-            z-index: 1;
+            z-index: 0; /* Verlaagd naar 0 om onder markeringen te vallen */
         }
     </style>
 </head>
@@ -564,7 +564,7 @@
                     const timelineY = (year - minYear) * scale * zoomLevel; // Het oorspronkelijke punt op de tijdlijn
 
                     // Hoogte van de SVG moet de afstand tussen timelineY en itemY overbruggen
-                    const svgHeight = Math.abs(itemY - timelineY) + 2; // +2 voor extra ruimte voor het bolletje
+                    const svgHeight = Math.abs(itemY - timelineY) + 4; // +4 voor ruimte voor het bolletje
                     const svgTop = Math.min(timelineY, itemY); // SVG begint op de laagste y-positie
 
                     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -588,11 +588,13 @@
                     }
 
                     // Teken de lijn
+                    const lineY1 = timelineY - svgTop;
+                    const lineY2 = itemY - svgTop;
                     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                     line.setAttribute("x1", "0");
-                    line.setAttribute("y1", timelineY - svgTop);
+                    line.setAttribute("y1", lineY1);
                     line.setAttribute("x2", itemX);
-                    line.setAttribute("y2", itemY - svgTop);
+                    line.setAttribute("y2", lineY2);
                     line.setAttribute("stroke", lineColor);
                     line.setAttribute("stroke-width", "1");
                     line.setAttribute("stroke-dasharray", "5,5");
@@ -601,7 +603,7 @@
                     // Teken een bolletje op het punt waar de lijn de tijdlijn raakt
                     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                     circle.setAttribute("cx", "0");
-                    circle.setAttribute("cy", timelineY - svgTop);
+                    circle.setAttribute("cy", lineY1);
                     circle.setAttribute("r", "2");
                     circle.setAttribute("fill", lineColor);
                     svg.appendChild(circle);
