@@ -142,7 +142,7 @@
             padding: 2px 5px;
             border: 1px solid #ccc;
             border-radius: 3px;
-            z-index: 3;
+            z-index: 2; /* Verlaagd van 3 naar 2 */
             white-space: nowrap;
         }
         .millennium-marker {
@@ -559,22 +559,53 @@
 
                     // Teken een schuine SVG-lijn van het item naar de tijdlijn
                     const timelineLineX = 75; // left: 50% van de 150px brede .timeline (midden van de tijdlijn)
-                    const itemX = timelineLineX + 90; // Startpunt van de lijn (midden van het item, vaste margin-left)
+                    const itemX = 90; // Afstand van de tijdlijn naar het item (margin-left van het item)
                     const itemY = position + itemHeight / 2; // Verticaal midden van het item
                     const timelineY = (year - minYear) * scale * zoomLevel; // Het oorspronkelijke punt op de tijdlijn
 
+                    // Hoogte van de SVG moet de afstand tussen timelineY en itemY overbruggen
+                    const svgHeight = Math.abs(itemY - timelineY) + 2; // +2 voor extra ruimte voor het bolletje
+                    const svgTop = Math.min(timelineY, itemY); // SVG begint op de laagste y-positie
+
                     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                     svg.setAttribute("class", "connector-line");
-                    svg.setAttribute("style", `position: absolute; top: ${timelineY}px; left: ${timelineLineX}px; width: ${90}px; height: ${Math.abs(itemY - timelineY) + itemHeight / 2}px;`);
+                    svg.setAttribute("style", `position: absolute; top: ${svgTop}px; left: ${timelineLineX}px; width: ${itemX}px; height: ${svgHeight}px;`);
+
+                    // Bepaal de kleur op basis van de motor
+                    let lineColor;
+                    switch (item.dataset.motor) {
+                        case 'Religie':
+                            lineColor = '#ff9999';
+                            break;
+                        case 'Volkscultuur':
+                            lineColor = '#99ccff';
+                            break;
+                        case 'Lichaamscultuur':
+                            lineColor = '#99ff99';
+                            break;
+                        default:
+                            lineColor = '#666';
+                    }
+
+                    // Teken de lijn
                     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                     line.setAttribute("x1", "0");
-                    line.setAttribute("y1", "0");
-                    line.setAttribute("x2", "90");
-                    line.setAttribute("y2", itemY - timelineY);
-                    line.setAttribute("stroke", "#666");
+                    line.setAttribute("y1", timelineY - svgTop);
+                    line.setAttribute("x2", itemX);
+                    line.setAttribute("y2", itemY - svgTop);
+                    line.setAttribute("stroke", lineColor);
                     line.setAttribute("stroke-width", "1");
                     line.setAttribute("stroke-dasharray", "5,5");
                     svg.appendChild(line);
+
+                    // Teken een bolletje op het punt waar de lijn de tijdlijn raakt
+                    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    circle.setAttribute("cx", "0");
+                    circle.setAttribute("cy", timelineY - svgTop);
+                    circle.setAttribute("r", "2");
+                    circle.setAttribute("fill", lineColor);
+                    svg.appendChild(circle);
+
                     timeline.appendChild(svg);
                 } else {
                     item.style.display = 'none';
