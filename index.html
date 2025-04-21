@@ -113,7 +113,7 @@
             font-size: 9px;
             z-index: 2;
             left: 50%;
-            margin-left: 40px;
+            margin-left: 90px; /* 40px + 50px verschuiving naar rechts */
             text-align: left;
             white-space: nowrap;
         }
@@ -139,6 +139,7 @@
             border-top: 1px dashed #666;
             top: 50%;
             left: -40px;
+            z-index: 1; /* Onder de markeringen */
         }
         .religie { background-color: #ff9999; }
         .volkscultuur { background-color: #99ccff; }
@@ -149,11 +150,11 @@
             transform: translateX(-50%);
             font-size: 12px;
             color: #666;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.8); /* Half doorzichtige witte achtergrond */
             padding: 2px 5px;
             border: 1px solid #ccc;
             border-radius: 3px;
-            z-index: 1;
+            z-index: 3; /* Boven de lijnen van items */
             white-space: nowrap;
         }
         .millennium-marker {
